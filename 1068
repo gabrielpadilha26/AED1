@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char expression[1002];
+
+    while (fgets(expression, sizeof(expression), stdin) != NULL) {
+        int open_parentheses = 0;
+        int len = strlen(expression);
+        int i;
+
+        for (i = 0; i < len; i++) {
+            if (expression[i] == '(') {
+                open_parentheses++;
+            } else if (expression[i] == ')') {
+                open_parentheses--;
+            }
+
+            if (open_parentheses < 0) {
+                break;
+            }
+        }
+
+        if (open_parentheses == 0) {
+            printf("correct\n");
+        } else {
+            printf("incorrect\n");
+        }
+    }
+
+    return 0;
+}
