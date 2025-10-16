@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_SIZE 1001
+
+int main() {
+    int n;
+    while (scanf("%d", &n) != EOF) {
+        bool is_stack = true;
+        bool is_queue = true;
+        bool is_pq = true;
+
+        int stack[MAX_SIZE];
+        int top = -1;
+
+        int queue[MAX_SIZE];
+        int front = 0;
+        int rear = -1;
+
+        int pq[MAX_SIZE];
+        int pq_size = 0;
+
+        for (int i = 0; i < n; i++) {
+            int command, x;
+            scanf("%d %d", &command, &x);
+
+            if (command == 1) {
+                stack[++top] = x;
+                queue[++rear] = x;
+                pq[pq_size++] = x;
+            } else {
+                if (top < 0 || stack[top] != x) {
+                    is_stack = false;
+                } else {
+                    top--;
+                }
+
+                if (front > rear || queue[front] != x) {
+                    is_queue = false;
+                } else {
+                    front++;
+                }
+                
+                if (pq_size <= 0) {
+                    is_pq = false;
+                } else {
+                    int max_val = -1;
+                    int max_idx = -1;
+                    for (int j = 0; j < pq_size; j++) {
+                        if (pq[j] > max_val) {
+                            max_val = pq[j];
+                            max_idx = j;
+                        }
+                    }
+
+                    if (max_val != x) {
+                        is_pq = false;
+                    } else {
+                        for (int j = max_idx; j < pq_size - 1; j++) {
+                            pq[j] = pq[j + 1];
+                        }
+                        pq_size--;
+                    }
+                }
+            }
+        }
+
+        int count = (is_stack ? 1 : 0) + (is_queue ? 1 : 0) + (is_pq ? 1 : 0);
+
+        if (count == 0) {
+            printf("impossible\n");
+        } else if (count > 1) {
+            printf("not sure\n");
+        } else {
+            if (is_stack) {
+                printf("stack\n");
+            } else if (is_queue) {
+                printf("queue\n");
+            } else {
+                printf("priority queue\n");
+            }
+        }
+    }
+    return 0;
+}
