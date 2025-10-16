@@ -1,0 +1,83 @@
+#include <stdio.h>
+
+int verifica_sudoku(int matriz[9][9]) {
+    int i, j, k;
+    int check[10];
+
+    // Verificação das linhas
+    for (i = 0; i < 9; i++) {
+        for (k = 0; k <= 9; k++) {
+            check[k] = 0;
+        }
+        for (j = 0; j < 9; j++) {
+            check[matriz[i][j]]++;
+        }
+        for (k = 1; k <= 9; k++) {
+            if (check[k] != 1) {
+                return 0;
+            }
+        }
+    }
+
+    // Verificação das colunas
+    for (j = 0; j < 9; j++) {
+        for (k = 0; k <= 9; k++) {
+            check[k] = 0;
+        }
+        for (i = 0; i < 9; i++) {
+            check[matriz[i][j]]++;
+        }
+        for (k = 1; k <= 9; k++) {
+            if (check[k] != 1) {
+                return 0;
+            }
+        }
+    }
+
+    // Verificação das regiões 3x3
+    for (int startRow = 0; startRow < 9; startRow += 3) {
+        for (int startCol = 0; startCol < 9; startCol += 3) {
+            for (k = 0; k <= 9; k++) {
+                check[k] = 0;
+            }
+            for (i = startRow; i < startRow + 3; i++) {
+                for (j = startCol; j < startCol + 3; j++) {
+                    check[matriz[i][j]]++;
+                }
+            }
+            for (k = 1; k <= 9; k++) {
+                if (check[k] != 1) {
+                    return 0;
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    int n, instancia;
+    int matriz_sudoku[9][9];
+    int i, j;
+
+    scanf("%d", &n);
+
+    for (instancia = 1; instancia <= n; instancia++) {
+        for (i = 0; i < 9; i++) {
+            for (j = 0; j < 9; j++) {
+                scanf("%d", &matriz_sudoku[i][j]);
+            }
+        }
+
+        printf("Instancia %d\n", instancia);
+
+        if (verifica_sudoku(matriz_sudoku)) {
+            printf("SIM\n\n");
+        } else {
+            printf("NAO\n\n");
+        }
+    }
+
+    return 0;
+}
