@@ -1,0 +1,139 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_C 10005
+#define MAX_V 100005
+#define INF 1000000000
+
+typedef struct {
+    int to;
+    int weight;
+    int next;
+} Edge;
+
+Edge edges[MAX_V];
+int head[MAX_C];
+int edge_idx;
+
+typedef struct {
+    int cost;
+    int u;
+    int parity; 
+} State;
+
+State heap[MAX_V * 4];
+int heap_size;
+
+void init_graph() {
+    edge_idx = 0;
+    for (int i = 0; i < MAX_C; i++) {
+        head[i] = -1;
+    }
+}
+
+void add_edge(int u, int v, int w) {
+    edges[edge_idx].to = v;
+    edges[edge_idx].weight = w;
+    edges[edge_idx].next = head[u];
+    head[u] = edge_idx++;
+}
+
+void swap(State *a, State *b) {
+    State temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void push(State s) {
+    heap[heap_size] = s;
+    int curr = heap_size++;
+    while (curr > 0) {
+        int parent = (curr - 1) / 2;
+        if (heap[curr].cost < heap[parent].cost) {
+            swap(&heap[curr], &heap[parent]);
+            curr = parent;
+        } else {
+            break;
+        }
+    }
+}
+
+State pop() {
+    State res = heap[0];
+    heap[0] = heap[--heap_size];
+    int curr = 0;
+    while (curr * 2 + 1 < heap_size) {
+        int left = curr * 2 + 1;
+        int right = curr * 2 + 2;
+        int smallest = left;
+        if (right < heap_size && heap[right].cost < heap[left].cost) {
+            smallest = right;
+        }
+        if (heap[smallest].cost < heap[curr].cost) {
+            swap(&heap[curr], &heap[smallest]);
+            curr = smallest;
+        } else {
+            break;
+        }
+    }
+    return res;
+}
+
+int dist[MAX_C][2];
+
+int main() {
+    int C, V;
+    
+    if (scanf("%d %d", &C, &V) != 2) return 0;
+
+    init_graph();
+
+    for (int i = 0; i < V; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        add_edge(u, v, w);
+        add_edge(v, u, w);
+    }
+
+    for (int i = 1; i <= C; i++) {
+        dist[i][0] = INF;
+        dist[i][1] = INF;
+    }
+
+    heap_size = 0;
+    dist[1][0] = 0;
+    
+    State start = {0, 1, 0};
+    push(start);
+
+    while (heap_size > 0) {
+        State current = pop();
+        int d = current.cost;
+        int u = current.u;
+        int p = current.parity;
+
+        if (d > dist[u][p]) continue;
+
+        for (int i = head[u]; i != -1; i = edges[i].next) {
+            int v = edges[i].to;
+            int w = edges[i].weight;
+            int new_dist = d + w;
+            int new_parity = 1 - p;
+
+            if (new_dist < dist[v][new_parity]) {
+                dist[v][new_parity] = new_dist;
+                State next_state = {new_dist, v, new_parity};
+                push(next_state);
+            }
+        }
+    }
+
+    if (dist[C][0] == INF) {
+        printf("-1\n");
+    } else {
+        printf("%d\n", dist[C][0]);
+    }
+
+    return 0;
+}
