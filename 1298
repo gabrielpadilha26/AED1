@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int u, v, w;
+} Edge;
+
+Edge edges[400005];
+int parent[400005];
+
+int compare(const void *a, const void *b) {
+    return ((Edge*)a)->w - ((Edge*)b)->w;
+}
+
+int find(int i) {
+    if (parent[i] == i)
+        return i;
+    return parent[i] = find(parent[i]);
+}
+
+void union_sets(int i, int j) {
+    int root_i = find(i);
+    int root_j = find(j);
+    if (root_i != root_j) {
+        parent[root_i] = root_j;
+    }
+}
+
+int get_id(int r, int c, int cols) {
+    return r * cols + c;
+}
+
+int main() {
+    int N;
+
+    while (scanf("%d", &N) != EOF) {
+        int rows = 2 * N + 1;
+        int cols = 2 * N + 2;
+        int num_nodes = rows * cols;
+
+        for (int i = 0; i < num_nodes; i++) {
+            parent[i] = i;
+        }
+
+        int main_root = get_id(0, 1, cols);
+
+        for (int c = 1; c < cols; c += 2) union_sets(main_root, get_id(0, c, cols));
+        for (int c = 1; c < cols; c += 2) union_sets(main_root, get_id(2 * N, c, cols));
+        for (int r = 0; r < rows; r += 2) union_sets(main_root, get_id(r, 2 * N + 1, cols));
+
+        if (N > 0) {
+            int island_root = get_id(1, 0, cols);
+            for (int r = 1; r < 2 * N; r += 2) {
+                union_sets(island_root, get_id(r, 0, cols));
+            }
+        }
+
+        int edge_count = 0;
+        char buffer[305];
+
+        for (int i = 1; i < 2 * N; i++) {
+            scanf("%s", buffer);
+            for (int j = 0; j < N; j++) {
+                int r_center = i;
+                int c_center = (i % 2 != 0) ? (2 * (j + 1) - 1) : (2 * (j + 1));
+                
+                char type = buffer[j];
+
+                edges[edge_count].u = get_id(r_center - 1, c_center, cols);
+                edges[edge_count].v = get_id(r_center + 1, c_center, cols);
+                edges[edge_count].w = (type == 'H');
+                edge_count++;
+
+                edges[edge_count].u = get_id(r_center, c_center - 1, cols);
+                edges[edge_count].v = get_id(r_center, c_center + 1, cols);
+                edges[edge_count].w = (type == 'V');
+                edge_count++;
+            }
+        }
+
+        qsort(edges, edge_count, sizeof(Edge), compare);
+
+        int total_cost = 0;
+        for (int i = 0; i < edge_count; i++) {
+            if (find(edges[i].u) != find(edges[i].v)) {
+                union_sets(edges[i].u, edges[i].v);
+                total_cost += edges[i].w;
+            }
+        }
+
+        printf("%d\n", total_cost);
+    }
+
+    return 0;
+}
