@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct no {
+    int v;
+    struct no *esq, *dir;
+} No;
+
+No* insere(No* r, int v) {
+    if (!r) {
+        r = (No*)malloc(sizeof(No));
+        r->v = v;
+        r->esq = r->dir = NULL;
+    } else if (v < r->v)
+        r->esq = insere(r->esq, v);
+    else
+        r->dir = insere(r->dir, v);
+    return r;
+}
+
+void pre(No* r, int *f) {
+    if (!r) return;
+    if (*f) { printf("%d", r->v); *f = 0; }
+    else printf(" %d", r->v);
+    pre(r->esq, f);
+    pre(r->dir, f);
+}
+
+void in(No* r, int *f) {
+    if (!r) return;
+    in(r->esq, f);
+    if (*f) { printf("%d", r->v); *f = 0; }
+    else printf(" %d", r->v);
+    in(r->dir, f);
+}
+
+void post(No* r, int *f) {
+    if (!r) return;
+    post(r->esq, f);
+    post(r->dir, f);
+    if (*f) { printf("%d", r->v); *f = 0; }
+    else printf(" %d", r->v);
+}
+
+int main() {
+    int C, N, x;
+    scanf("%d", &C);
+
+    for (int c = 1; c <= C; c++) {
+        No* raiz = NULL;
+        scanf("%d", &N);
+
+        for (int i = 0; i < N; i++) {
+            scanf("%d", &x);
+            raiz = insere(raiz, x);
+        }
+
+        printf("Case %d:\n", c);
+
+        int f = 1;
+        printf("Pre.: ");
+        pre(raiz, &f);
+        printf("\n");
+
+        f = 1;
+        printf("In..: ");
+        in(raiz, &f);
+        printf("\n");
+
+        f = 1;
+        printf("Post: ");
+        post(raiz, &f);
+        printf("\n\n");
+    }
+
+    return 0;
+}
