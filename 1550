@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+
+int queue[20000];
+int dist[20000];
+
+int reverse(int x) {
+    int r = 0;
+    while (x > 0) {
+        r = r * 10 + x % 10;
+        x /= 10;
+    }
+    return r;
+}
+
+int bfs(int A, int B) {
+    memset(dist, -1, sizeof(dist));
+    int front = 0, back = 0;
+    queue[back++] = A;
+    dist[A] = 0;
+
+    while (front < back) {
+        int u = queue[front++];
+        if (u == B) return dist[u];
+
+        int v = u + 1;
+        if (v < 20000 && dist[v] == -1) {
+            dist[v] = dist[u] + 1;
+            queue[back++] = v;
+        }
+
+        v = reverse(u);
+        if (v < 20000 && dist[v] == -1) {
+            dist[v] = dist[u] + 1;
+            queue[back++] = v;
+        }
+    }
+    return -1;
+}
+
+int main() {
+    int T, A, B;
+    scanf("%d", &T);
+    while (T--) {
+        scanf("%d %d", &A, &B);
+        printf("%d\n", bfs(A, B));
+    }
+    return 0;
+}
