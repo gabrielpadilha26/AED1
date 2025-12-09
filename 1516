@@ -1,0 +1,31 @@
+#include <stdio.h>
+
+int main() {
+    int N, M, A, B;
+    char grid[55][55];
+
+    while (scanf("%d %d", &N, &M) && (N != 0 || M != 0)) {
+        for (int i = 0; i < N; i++) {
+            scanf("%s", grid[i]);
+        }
+
+        scanf("%d %d", &A, &B);
+
+        int scaleH = A / N;
+        int scaleW = B / M;
+
+        for (int i = 0; i < N; i++) {
+            for (int k = 0; k < scaleH; k++) {
+                for (int j = 0; j < M; j++) {
+                    for (int l = 0; l < scaleW; l++) {
+                        printf("%c", grid[i][j]);
+                    }
+                }
+                printf("\n");
+            }
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
