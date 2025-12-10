@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+int main() {
+    int N, K;
+
+    while (scanf("%d %d", &N, &K) && (N || K)) {
+        int pilha[1005];
+        int topo = 0;
+        int possivel = 1;
+        int C, S;
+
+        for (int i = 0; i < N; i++) {
+            scanf("%d %d", &C, &S);
+
+            if (!possivel) continue;
+
+            while (topo > 0 && pilha[topo - 1] <= C) {
+                topo--;
+            }
+
+            if (topo >= K) {
+                possivel = 0;
+            } else if (topo > 0 && pilha[topo - 1] <= S) {
+                possivel = 0;
+            } else {
+                pilha[topo++] = S;
+            }
+        }
+
+        if (possivel)
+            printf("Sim\n");
+        else
+            printf("Nao\n");
+    }
+
+    return 0;
+}
