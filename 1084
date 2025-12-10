@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 100005
+
+int main() {
+    int N, D;
+    char numero[MAX];
+    char resultado[MAX];
+
+    while (scanf("%d %d", &N, &D) && (N != 0 || D != 0)) {
+        scanf("%s", numero);
+
+        int topo = -1;
+        int apagados = 0;
+
+        for (int i = 0; i < N; i++) {
+            while (topo > -1 && apagados < D && numero[i] > resultado[topo]) {
+                topo--;
+                apagados++;
+            }
+            // Só empilha se ainda couber no tamanho final do resultado
+            // ou se ainda precisamos processar remoções futuras
+            if (topo + 1 < N - D + apagados) {
+                 resultado[++topo] = numero[i];
+            }
+        }
+
+        resultado[N - D] = '\0';
+        printf("%s\n", resultado);
+    }
+
+    return 0;
+}
