@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int u, v, p;
+} Aresta;
+
+Aresta arestas[205];
+int pai[65];
+
+int find(int i) {
+    if (pai[i] == i)
+        return i;
+    return pai[i] = find(pai[i]);
+}
+
+int compare(const void *a, const void *b) {
+    return ((Aresta*)a)->p - ((Aresta*)b)->p;
+}
+
+int main() {
+    int R, C;
+    if (scanf("%d %d", &R, &C) != 2) return 0;
+
+    for (int i = 0; i < C; i++) {
+        scanf("%d %d %d", &arestas[i].u, &arestas[i].v, &arestas[i].p);
+    }
+
+    for (int i = 1; i <= R; i++) {
+        pai[i] = i;
+    }
+
+    qsort(arestas, C, sizeof(Aresta), compare);
+
+    int custo_total = 0;
+    int arestas_count = 0;
+
+    for (int i = 0; i < C; i++) {
+        int raiz_u = find(arestas[i].u);
+        int raiz_v = find(arestas[i].v);
+
+        if (raiz_u != raiz_v) {
+            pai[raiz_u] = raiz_v;
+            custo_total += arestas[i].p;
+            arestas_count++;
+
+            if (arestas_count == R - 1) break; 
+        }
+    }
+
+    printf("%d\n", custo_total);
+
+    return 0;
+}
